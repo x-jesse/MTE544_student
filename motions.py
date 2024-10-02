@@ -10,10 +10,10 @@ from rclpy.qos import QoSProfile
     # For sending velocity commands to the robot: Twist
     # For the sensors: Imu, LaserScan, and Odometry
 # Check the online documentation to fill in the lines below
-from ... import Twist
+from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Imu
-from ... import LaserScan
-from ... import Odometry
+from sensor_msgs.msg import LaserScan
+from nav_msgs.msg import Odometry
 
 from rclpy.time import Time
 
@@ -31,6 +31,7 @@ class motion_executioner(Node):
         super().__init__("motion_types")
         
         self.type=motion_type
+        print(self.type)
         
         self.radius_=0.0
         
@@ -40,7 +41,7 @@ class motion_executioner(Node):
         self.laser_initialized=False
         
         # TODO Part 3: Create a publisher to send velocity commands by setting the proper parameters in (...)
-        self.vel_publisher=self.create_publisher(...)
+        self.vel_publisher=self.create_publisher(Twist, "/cmd_vel", 10)
                 
         # loggers
         self.imu_logger=Logger('imu_content_'+str(motion_types[motion_type])+'.csv', headers=["acc_x", "acc_y", "angular_z", "stamp"])
@@ -48,20 +49,17 @@ class motion_executioner(Node):
         self.laser_logger=Logger('laser_content_'+str(motion_types[motion_type])+'.csv', headers=["ranges", "angle_increment", "stamp"])
         
         # TODO Part 3: Create the QoS profile by setting the proper parameters in (...)
-        qos=QoSProfile(...)
+        qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
 
         # TODO Part 5: Create below the subscription to the topics corresponding to the respective sensors
         # IMU subscription
-        
-        ...
-        
+        self.create_subscription(Imu, "/imu", self.imu_callback, qos_profile=qos)
+                
         # ENCODER subscription
-
-        ...
+        self.create_subscription(Odometry, "/odom", self.odom_callback, qos_profile=qos)
         
         # LaserScan subscription 
-        
-        ...
+        self.create_subscription(LaserScan, "/scan", self.laser_callback, qos_profile=qos)
         
         self.create_timer(0.1, self.timer_callback)
 
@@ -73,15 +71,25 @@ class motion_executioner(Node):
     # You can save the needed fields into a list, and pass the list to the log_values function in utilities.py
 
     def imu_callback(self, imu_msg: Imu):
-        ...    # log imu msgs
-        
+        timestamp = Time.from_msg(imu_msg.header.stamp).nanoseconds
+
+
     def odom_callback(self, odom_msg: Odometry):
-        
-        ... # log odom msgs
+        # Get timestamp from message (timestamp is always in the message header)
+        timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
+
+        # Get message data
+        odom_orientation = odom_msg.pose.pose.orientation
+        odom_x_pos = odom_msg.pose.pose.position.x
+        odom_y_pos = odom_msg.pose.pose.position.y
+
+        # print(f'Message Timestamp = {timestamp}')
+        # print(f'Current Robot Orientation = {odom_orientation}')
+        # print(f'Current Robot X Position = {odom_x_pos}')
+        # print(f'Current Robot Y Position = {odom_y_pos}')
                 
-    def laser_callback(self, laser_msg: LaserScan):
-        
-        ... # log laser msgs with position msg at that time
+    def laser_callback(self, laser_msg: LaserScan):   
+        pass # log laser msgs with position msg at that time
                 
     def timer_callback(self):
         
@@ -94,6 +102,7 @@ class motion_executioner(Node):
         cmd_vel_msg=Twist()
         
         if self.type==CIRCLE:
+            print('type circle')
             cmd_vel_msg=self.make_circular_twist()
         
         elif self.type==SPIRAL:
@@ -110,11 +119,14 @@ class motion_executioner(Node):
         
     
     # TODO Part 4: Motion functions: complete the functions to generate the proper messages corresponding to the desired motions of the robot
-
     def make_circular_twist(self):
         
         msg=Twist()
-        ... # fill up the twist msg for circular motion
+
+        # Populate the message with desired linear and angular velocity, respectively
+        msg.linear.x=0.5
+        msg.angular.z = 0.7
+        print(msg)
         return msg
 
     def make_spiral_twist(self):
@@ -137,11 +149,10 @@ if __name__=="__main__":
 
     argParser.add_argument("--motion", type=str, default="circle")
 
-
-
     rclpy.init()
 
     args = argParser.parse_args()
+    print(f"Executing motion: {args.motion}")
 
     if args.motion.lower() == "circle":
 
@@ -155,8 +166,6 @@ if __name__=="__main__":
     else:
         print(f"we don't have {arg.motion.lower()} motion type")
 
-
-    
     try:
         rclpy.spin(ME)
     except KeyboardInterrupt:
