@@ -31,7 +31,6 @@ class motion_executioner(Node):
         super().__init__("motion_types")
         
         self.type=motion_type
-        print(self.type)
         
         self.radius_=0.0
         
@@ -54,12 +53,15 @@ class motion_executioner(Node):
         # TODO Part 5: Create below the subscription to the topics corresponding to the respective sensors
         # IMU subscription
         self.create_subscription(Imu, "/imu", self.imu_callback, qos_profile=qos)
+        self.imu_initialized = True
                 
         # ENCODER subscription
         self.create_subscription(Odometry, "/odom", self.odom_callback, qos_profile=qos)
+        self.odom_initialized = True
         
         # LaserScan subscription 
         self.create_subscription(LaserScan, "/scan", self.laser_callback, qos_profile=qos)
+        self.laser_initialized = True
         
         self.create_timer(0.1, self.timer_callback)
 
@@ -73,8 +75,13 @@ class motion_executioner(Node):
     def imu_callback(self, imu_msg: Imu):
         timestamp = Time.from_msg(imu_msg.header.stamp).nanoseconds
 
+        imu_acc_x = imu_msg.linear_acceleration.x
+        imu_acc_y = imu_msg.linear_acceleration.y
+        imu_ang_z = imu_msg.angular_velocity.z
 
-    def odom_callback(self, odom_msg: Odometry):
+        self.imu_logger.log_values([imu_acc_x, imu_acc_y, imu_ang_z, timestamp])
+
+    def odom_callback(self, odom_msg: Odometry) -> None:
         # Get timestamp from message (timestamp is always in the message header)
         timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
 
@@ -83,13 +90,16 @@ class motion_executioner(Node):
         odom_x_pos = odom_msg.pose.pose.position.x
         odom_y_pos = odom_msg.pose.pose.position.y
 
-        # print(f'Message Timestamp = {timestamp}')
-        # print(f'Current Robot Orientation = {odom_orientation}')
-        # print(f'Current Robot X Position = {odom_x_pos}')
-        # print(f'Current Robot Y Position = {odom_y_pos}')
+        print([odom_x_pos, odom_y_pos, odom_orientation, timestamp])
+        self.odom_logger.log_values([odom_x_pos, odom_y_pos, odom_orientation, timestamp])
                 
-    def laser_callback(self, laser_msg: LaserScan):   
-        pass # log laser msgs with position msg at that time
+    def laser_callback(self, laser_msg: LaserScan):
+        # print(laser_msg)
+        laser_ranges = laser_msg.ranges
+        laser_ang_incre = laser_msg.angle_increment
+        timestamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
+
+        self.laser_logger.log_values([laser_ranges, laser_ang_incre, timestamp])        
                 
     def timer_callback(self):
         
@@ -102,7 +112,6 @@ class motion_executioner(Node):
         cmd_vel_msg=Twist()
         
         if self.type==CIRCLE:
-            print('type circle')
             cmd_vel_msg=self.make_circular_twist()
         
         elif self.type==SPIRAL:
@@ -120,24 +129,28 @@ class motion_executioner(Node):
     
     # TODO Part 4: Motion functions: complete the functions to generate the proper messages corresponding to the desired motions of the robot
     def make_circular_twist(self):
-        
         msg=Twist()
 
         # Populate the message with desired linear and angular velocity, respectively
-        msg.linear.x=0.5
+        msg.linear.x = 0.5
         msg.angular.z = 0.7
-        print(msg)
         return msg
 
     def make_spiral_twist(self):
         msg=Twist()
-        ... # fill up the twist msg for spiral motion
+        msg.linear.x=0.3
+        msg.linear.z=0.4
+        msg.angular.z=0.7
         return msg
     
     def make_acc_line_twist(self):
         msg=Twist()
-        ... # fill up the twist msg for line motion
+        msg.linear.x=0.7
         return msg
+    
+    def reset_vel(self):
+        msg = Twist()
+        return 
 
 import argparse
 
