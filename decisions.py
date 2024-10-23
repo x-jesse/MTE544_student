@@ -112,9 +112,9 @@ def main(args=None):
 
     # TODO Part 4: instantiate the decision_maker with the proper parameters for moving the robot
     if args.motion.lower() == "point":
-        DM=decision_maker(Twist, '/cmd_vel', odom_qos)
+        DM=decision_maker(Twist, '/cmd_vel', odom_qos, [1, 1])
     elif args.motion.lower() == "trajectory":
-        DM=decision_maker(Twist, '/cmd_vel', odom_qos)
+        DM=decision_maker(Twist, '/cmd_vel', odom_qos, [1, 1])
     else:
         print("invalid motion type", file=sys.stderr)        
     
