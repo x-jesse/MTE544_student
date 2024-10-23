@@ -44,6 +44,7 @@ class localization(Node):
         self.loc_logger.log_values([self.pose[0], self.pose[1], self.pose[2], Time.from_msg(self.pose[3]).nanoseconds])
     
     def getPose(self):
+        print(self.pose)
         return self.pose
 
 # TODO Part 3

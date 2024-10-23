@@ -120,7 +120,6 @@ def main(args=None):
         print("invalid motion type", file=sys.stderr)        
     
     
-    
     try:
         spin(DM)
     except SystemExit:
