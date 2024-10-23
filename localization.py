@@ -15,8 +15,6 @@ class localization(Node):
     def __init__(self, localizationType=rawSensor):
 
         super().__init__("localizer")
-
-        print(localizationType)
         
         # TODO Part 3: Define the QoS profile variable based on whether you are using the simulation (Turtlebot 3 Burger) or the real robot (Turtlebot 4)
         # Remember to define your QoS profile based on the information available in "ros2 topic info /odom --verbose" as explained in Tutorial 3
@@ -29,6 +27,7 @@ class localization(Node):
         if localizationType == rawSensor:
         # TODO Part 3: subscribe to the position sensor topic (Odometry)
             self.create_subscription(odom, "/odom", self.odom_callback, qos_profile=odom_qos)
+            print('sub created')
         else:
             print("This type doesn't exist", sys.stderr)
     
