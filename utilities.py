@@ -89,7 +89,11 @@ def euler_from_quaternion(quat):
     Convert quaternion (w in last place) to euler roll, pitch, yaw.
     quat = [x, y, z, w]
     """
-    
+    x, y, z, w = quat
+
+    t3 = 2.0 * (w * z + x * y)
+    t4 = 1.0 - 2.0 * (y * y + z * z)
+    yaw = atan2(t3, t4)
     # just unpack yaw
     return yaw
 
@@ -100,7 +104,9 @@ def calculate_linear_error(current_pose, goal_pose):
     # Compute the linear error in x and y
     # Remember that current_pose = [x,y, theta, time stamp] and goal_pose = [x,y]
     # Remember to use the Euclidean distance to calculate the error.
-    error_linear= ...
+    currx, curry, theta, timestamp = current_pose
+    goalx, goaly = goal_pose
+    error_linear= sqrt((currx-goalx)**2 + (curry-goaly)**2)
 
     return error_linear
 
