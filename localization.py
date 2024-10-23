@@ -32,9 +32,6 @@ class localization(Node):
     
     
     def odom_callback(self, pose_msg):
-        # Get timestamp from message (timestamp is always in the message header)
-        timestamp = Time.from_msg(pose_msg.header.stamp).nanoseconds
-
         # Get message data
         theta = pose_msg.pose.pose.orientation
         x_pos = pose_msg.pose.pose.position.x
