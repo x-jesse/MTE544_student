@@ -89,7 +89,7 @@ def euler_from_quaternion(quat):
     Convert quaternion (w in last place) to euler roll, pitch, yaw.
     quat = [x, y, z, w]
     """
-
+    
     # just unpack yaw
     return yaw
 
