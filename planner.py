@@ -25,9 +25,29 @@ class planner:
 
     # TODO Part 6: Implement the trajectories here
     def trajectory_planner(self):
-        def path(time):
-            return [math.sin(time), math.sin(time)]
+        """
+        Parabola: x in [0, 1.5] 
+        Sigmoid: x in [0, 2.5]
+        """
+        # timesteps of 0.1
+        trajectory = []
         
-        time_range = 100
-        return [path(t) for t in range(time_range)]
+        # parabola
+        for x in range(15):
+            x /= 10
+            y = x ** 2
+            trajectory.append([x, y])
+        
+        # return trajectory
+
+        trajectory = []
+    
+        # sigmoid
+        for x in range(25):
+            x /= 10
+            y = 2 / (1 + math.e ** (-2*x)) - 1
+            trajectory.append([x, y])
+
+        return trajectory
+
 
