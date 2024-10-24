@@ -30,8 +30,10 @@ class controller:
         
         # TODO Part 4: Add saturation limits for the robot linear and angular velocity
         """
-        Documentation appears to be potentially outdated, from 
+        From
         https://github.com/ROBOTIS-GIT/turtlebot3_simulations/blob/master/turtlebot3_fake/include/turtlebot3_fake/turtlebot3_fake.h
+        and
+        https://emanual.robotis.com/docs/en/platform/turtlebot3/features/
 
         #define MAX_LINEAR_VELOCITY             0.22   // m/s
         #define MAX_ANGULAR_VELOCITY            2.84   // rad/s

@@ -35,7 +35,7 @@ class PID_ctrl:
             return self.__update(stamped_error)
 
         
-    def __update(self, stamped_error):
+    def __update(self, stamped_error): # assume stamped_error has form [error, stamp]
         
         latest_error=stamped_error[0]
         stamp=stamped_error[1]
@@ -66,7 +66,8 @@ class PID_ctrl:
             # for example dt=0.1 overwriting the calculation          
             
             # TODO Part 5: calculate the error dot 
-            error_dot += stamped_error/dt_avg
+            # curr - prev = change in error
+            error_dot += (self.history[i][0] - self.history[i - 1][0]) / dt_avg
             
         error_dot/=len(self.history)
         dt_avg/=len(self.history)
@@ -75,23 +76,22 @@ class PID_ctrl:
         sum_=0
         for hist in self.history:
             # TODO Part 5: Gather the integration
-            sum+= stamped_error
-            pass
+            sum_ += hist[0]
         
         error_int=sum_*dt_avg
         
         # TODO Part 4: Log your errors
-        self.logger.log_values(error_int,error_dot)
+        self.logger.log_values([latest_error, error_int, error_dot, stamp])
         
         # TODO Part 4: Implement the control law of P-controller
         if self.type == P:
-            return (kp*latest_error)
+            return self.kp * latest_error
         
         # TODO Part 5: Implement the control law corresponding to each type of controller
         elif self.type == PD:
-            return (kd*error_dot)+(kp*latest_error)
+            return self.kv * error_dot + self.kp * latest_error
         
         elif self.type == PI:
-            return (ki*error_int)+(kp*latest_error)
+            return self.ki * error_int + self.kp * latest_error
         elif self.type == PID:
-            return (kp*latest_error)+(kd*error_dot)+(ki*error_int)
+            return self.kp * latest_error + self.kv * error_dot + self.ki * error_int
