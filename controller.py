@@ -8,8 +8,6 @@ M_PI=3.1415926535
 
 P=0; PD=1; PI=2; PID=3
 
-SATURATION_LIMIT = 5 # set saturation limit for velocity
-
 class controller:
     
     
@@ -38,7 +36,6 @@ class controller:
         #define MAX_LINEAR_VELOCITY             0.22   // m/s
         #define MAX_ANGULAR_VELOCITY            2.84   // rad/s
         """
-
         linear_vel = 0.22 if linear_vel > 0.22 else linear_vel
         angular_vel= 2.84 if angular_vel > 2.84 else angular_vel
         
@@ -65,9 +62,9 @@ class trajectoryController(controller):
         angular_vel=self.PID_angular.update([e_ang, pose[3]], status) 
 
         # TODO Part 5: Add saturation limits for the robot linear and angular velocity
-
-        linear_vel = SATURATION_LIMIT if linear_vel > ... else linear_vel
-        angular_vel= SATURATION_LIMIT if angular_vel > ... else angular_vel
+        # same as above
+        linear_vel = 0.22 if linear_vel > 0.22 else linear_vel
+        angular_vel= 2.84 if angular_vel > 2.84 else angular_vel
         
         return linear_vel, angular_vel
 
