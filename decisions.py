@@ -30,6 +30,7 @@ class decision_maker(Node):
 
         #TODO Part 4: Create a publisher for the topic responsible for robot's motion
         self.publisher=self.create_publisher(publisher_msg, publishing_topic, qos_publisher)
+
         publishing_period=1/rate
         
         # Instantiate the controller
@@ -61,6 +62,7 @@ class decision_maker(Node):
     def timerCallback(self):
         
         # TODO Part 3: Run the localization node
+
         spin_once({self.localizer})   # Remember that this file is already running the decision_maker node.
 
         if self.localizer.getPose()  is  None:
@@ -73,10 +75,9 @@ class decision_maker(Node):
         errorThreshold = 0.1
         
         if type(self.goal) == list:
-            
-            reached_goal= calculate_linear_error(self.localizer.getPose(), self.goal) > errorThreshold
+            reached_goal = calculate_linear_error(self.localizer.getPose(), self.goal) > errorThreshold
         else: 
-            reached_goal= calculate_linear_error(self.localizer.getPose(), self.goal) > errorThreshold
+            reached_goal = calculate_linear_error(self.localizer.getPose(), self.goal) > errorThreshold
         
 
         if reached_goal:
@@ -93,6 +94,7 @@ class decision_maker(Node):
         # fill in vel_msg
         vel_msg.linear.x = velocity
         vel_msg.angular.z = yaw_rate
+        
         #TODO Part 4: Publish the velocity to move the robot
         self.publisher.publish(vel_msg)
 
