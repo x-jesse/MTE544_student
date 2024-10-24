@@ -31,9 +31,16 @@ class controller:
         angular_vel=self.PID_angular.update([e_ang, pose[3]], status)
         
         # TODO Part 4: Add saturation limits for the robot linear and angular velocity
+        """
+        Documentation appears to be potentially outdated, from 
+        https://github.com/ROBOTIS-GIT/turtlebot3_simulations/blob/master/turtlebot3_fake/include/turtlebot3_fake/turtlebot3_fake.h
 
-        linear_vel = SATURATION_LIMIT if linear_vel > 1.0 else linear_vel
-        angular_vel= SATURATION_LIMIT if angular_vel > 1.0 else angular_vel
+        #define MAX_LINEAR_VELOCITY             0.22   // m/s
+        #define MAX_ANGULAR_VELOCITY            2.84   // rad/s
+        """
+
+        linear_vel = 0.22 if linear_vel > 0.22 else linear_vel
+        angular_vel= 2.84 if angular_vel > 2.84 else angular_vel
         
         return linear_vel, angular_vel
     
