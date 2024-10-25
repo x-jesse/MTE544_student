@@ -60,15 +60,15 @@ class decision_maker(Node):
 
 
     def timerCallback(self):
-        
+        print('timer call')
         # TODO Part 3: Run the localization node
 
-        spin_once({self.localizer})   # Remember that this file is already running the decision_maker node.
+        spin_once(self.localizer)   # Remember that this file is already running the decision_maker node.
 
         if self.localizer.getPose()  is  None:
             print("waiting for odom msgs ....")
             return
-
+        print('spin')
         vel_msg=Twist()
         
         # TODO Part 3: Check if you reached the goal
@@ -94,6 +94,7 @@ class decision_maker(Node):
         # fill in vel_msg
         vel_msg.linear.x = velocity
         vel_msg.angular.z = yaw_rate
+        print(vel_msg)
         
         #TODO Part 4: Publish the velocity to move the robot
         self.publisher.publish(vel_msg)
@@ -113,13 +114,13 @@ def main(args=None):
 
     # TODO Part 4: instantiate the decision_maker with the proper parameters for moving the robot
     if args.motion.lower() == "point":
-        DM=decision_maker(Twist, '\cmd_vel', odom_qos, [1, 1], motion_type=POINT_PLANNER)
+        DM=decision_maker(Twist, '/cmd_vel', odom_qos, [1, 1], motion_type=POINT_PLANNER)
     elif args.motion.lower() == "trajectory":
-        DM=decision_maker(Twist, '\cmd_vel', odom_qos, [1, 1], motion_type=TRAJECTORY_PLANNER)
+        DM=decision_maker(Twist, '/cmd_vel', odom_qos, [1, 1], motion_type=TRAJECTORY_PLANNER)
     else:
         print("invalid motion type", file=sys.stderr)        
     
-    
+    print('dm created')
     
     try:
         spin(DM)
