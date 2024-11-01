@@ -32,15 +32,13 @@ class planner:
         # timesteps of 0.1
         trajectory = []
         
-        # parabola
-        for x in range(15):
-            x /= 10
-            y = x ** 2
-            trajectory.append([x, y])
+        # # parabola
+        # for x in range(15):
+        #     x /= 10
+        #     y = x ** 2
+        #     trajectory.append([x, y])
         
         # return trajectory
-
-        trajectory = []
     
         # sigmoid
         for x in range(25):

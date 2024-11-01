@@ -9,7 +9,7 @@ PID=3 # proportional, integral, derivative
 
 class PID_ctrl:
     
-    def __init__(self, type_, kp=1.2,kv=0.8,ki=0.2, history_length=3, filename_="errors.csv"):
+    def __init__(self, type_, kp=10, kv=1.2, ki=0.05, history_length=3, filename_="errors.csv"):
         
         # Data for the controller
         self.history_length=history_length
@@ -81,7 +81,7 @@ class PID_ctrl:
         error_int=sum_*dt_avg
         
         # TODO Part 4: Log your errors
-        self.logger.log_values([latest_error, error_int, error_dot, stamp])
+        self.logger.log_values([latest_error, error_int, error_dot, Time.from_msg(stamp).nanoseconds])
         
         # TODO Part 4: Implement the control law of P-controller
         if self.type == P:

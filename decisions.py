@@ -60,7 +60,7 @@ class decision_maker(Node):
 
 
     def timerCallback(self):
-        print('timer call')
+        # print('timer call')
         # TODO Part 3: Run the localization node
 
         spin_once(self.localizer)   # Remember that this file is already running the decision_maker node.
@@ -68,20 +68,22 @@ class decision_maker(Node):
         if self.localizer.getPose()  is  None:
             print("waiting for odom msgs ....")
             return
-        print('spin')
+        # print('spin')
         vel_msg=Twist()
         
         # TODO Part 3: Check if you reached the goal
         errorThreshold = 0.1
+        # linear_error = calculate_linear_error(self.localizer.getPose(), self.goal)
+        # print("lineare", linear_error)
         
         if type(self.goal) == list:
-            reached_goal = calculate_linear_error(self.localizer.getPose(), self.goal) > errorThreshold
+            reached_goal = calculate_linear_error(self.localizer.getPose(), self.goal[-1]) < errorThreshold
         else: 
-            reached_goal = calculate_linear_error(self.localizer.getPose(), self.goal) > errorThreshold
+            reached_goal = calculate_linear_error(self.localizer.getPose(), self.goal) < errorThreshold
         
 
         if reached_goal:
-            print("reached goal")
+            # print("reached goal")
             self.publisher.publish(vel_msg)
             
             self.controller.PID_angular.logger.save_log()
@@ -94,7 +96,7 @@ class decision_maker(Node):
         # fill in vel_msg
         vel_msg.linear.x = velocity
         vel_msg.angular.z = yaw_rate
-        print(vel_msg)
+        # print(vel_msg)
         
         #TODO Part 4: Publish the velocity to move the robot
         self.publisher.publish(vel_msg)
@@ -114,11 +116,11 @@ def main(args=None):
 
     # TODO Part 4: instantiate the decision_maker with the proper parameters for moving the robot
     if args.motion.lower() == "point":
-        DM=decision_maker(Twist, '/cmd_vel', odom_qos, [1, 1], motion_type=POINT_PLANNER)
+        DM=decision_maker(Twist, '/cmd_vel', odom_qos, [2, 2], motion_type=POINT_PLANNER)
     elif args.motion.lower() == "trajectory":
         DM=decision_maker(Twist, '/cmd_vel', odom_qos, [1, 1], motion_type=TRAJECTORY_PLANNER)
     else:
-        print("invalid motion type", file=sys.stderr)        
+        print("invalid motion type", file=sys.stderr)
     
     print('dm created')
     
@@ -131,7 +133,7 @@ def main(args=None):
 if __name__=="__main__":
 
     argParser=argparse.ArgumentParser(description="point or trajectory") 
-    argParser.add_argument("--motion", type=str, default="point")
+    argParser.add_argument("-m", "--motion", type=str, default="point")
     args = argParser.parse_args()
 
     main(args)

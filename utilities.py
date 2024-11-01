@@ -89,7 +89,8 @@ def euler_from_quaternion(quat):
     Convert quaternion (w in last place) to euler roll, pitch, yaw.
     quat = [x, y, z, w]
     """
-    x, y, z, w = quat
+    x, y, z, w = quat.x, quat.y, quat.z, quat.w
+    # print(quat)
 
     t3 = 2.0 * (w * z + x * y)
     t4 = 1.0 - 2.0 * (y * y + z * z)
@@ -104,9 +105,12 @@ def calculate_linear_error(current_pose, goal_pose):
     # Compute the linear error in x and y
     # Remember that current_pose = [x,y, theta, time stamp] and goal_pose = [x,y]
     # Remember to use the Euclidean distance to calculate the error.
+    print(goal_pose)
     currx, curry, theta, timestamp = current_pose
     goalx, goaly = goal_pose
+    # print("stats:", currx, curry, goal_pose)
     error_linear= sqrt((currx-goalx)**2 + (curry-goaly)**2)
+    print("lin e:", error_linear)
 
     return error_linear
 
@@ -120,16 +124,23 @@ def calculate_angular_error(current_pose, goal_pose):
     
     currx, curry, theta, timestamp = current_pose
     goalx, goaly = goal_pose
+    print(goal_pose)
 
     desiredTheta = atan2(goaly-curry, goalx-currx)
-
+    # print("desired theta", desiredTheta)
+    # print("current Theta", theta)
     error_angular = desiredTheta - theta
 
     # Remember to handle the cases where the angular error might exceed the range [-π, π]
 
-    if error_angular > M_PI:
+    if error_angular >= M_PI:
         error_angular -= 2*M_PI
-    elif error_angular < M_PI:
+    elif error_angular <= -M_PI:
+        # error_angular = error_angular % M_PI - M_PI
         error_angular += 2*M_PI
-    
+    # if error_angular > M_PI:
+    #     error_angular %= 2*M_PI - M_PI
+    # elif error_angular < -M_PI:
+    #     error_angular %= 2*M_PI + M_PI
+    # print("error ang", error_angular)
     return error_angular
